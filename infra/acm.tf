@@ -21,27 +21,30 @@ resource "aws_acm_certificate" "cloudfront" {
   }
 }
 
-# ACM issues the same DNS validation CNAME for both certs (same domain, same
-# account), so both certificate_validation resources share one set of
-# Route53 records instead of each creating their own (which collides).
 locals {
-  cert_validation_records = local.use_custom_domain ? merge(
-    { for dvo in aws_acm_certificate.alb[0].domain_validation_options : dvo.resource_record_name => {
-      type   = dvo.resource_record_type
-      record = dvo.resource_record_value
-    } },
-    { for dvo in aws_acm_certificate.cloudfront[0].domain_validation_options : dvo.resource_record_name => {
-      type   = dvo.resource_record_type
-      record = dvo.resource_record_value
-    } }
-  ) : {}
+  cert_validation_records = local.use_custom_domain ? {
+    validation = {
+      name = one([
+        for dvo in aws_acm_certificate.alb[0].domain_validation_options :
+        dvo.resource_record_name
+      ])
+      type = one([
+        for dvo in aws_acm_certificate.alb[0].domain_validation_options :
+        dvo.resource_record_type
+      ])
+      record = one([
+        for dvo in aws_acm_certificate.alb[0].domain_validation_options :
+        dvo.resource_record_value
+      ])
+    }
+  } : {}
 }
 
 resource "aws_route53_record" "cert_validation" {
   for_each = local.cert_validation_records
 
   zone_id = data.aws_route53_zone.main[0].zone_id
-  name    = each.key
+  name    = each.value.name
   type    = each.value.type
   records = [each.value.record]
   ttl     = 60
