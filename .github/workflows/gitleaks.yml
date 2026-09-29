@@ -49,7 +49,7 @@ jobs:
       - name: SonarQube Cloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B sonar:sonar
+        run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
