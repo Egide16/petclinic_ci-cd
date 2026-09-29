@@ -1,0 +1,6 @@
+[allowlist]
+description = "Allow SonarQube project key false positive"
+regexTarget = "match"
+regexes = [
+  '''-Dsonar\.projectKey=Egide16_petclinic_ci-cd'''
+]

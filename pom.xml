@@ -17,6 +17,7 @@
   <properties>
   <!-- SonarQube Cloud -->
   <sonar.organization>egide16</sonar.organization>
+  <sonar.projectKey>Egide16_petclinic_ci-cd</sonar.projectKey>
     <!-- Generic properties -->
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
